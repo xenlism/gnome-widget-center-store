@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GNOME Widget Center Store</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">🧩 Widget Center Store</a>
+      <button class="nav-toggle" aria-label="เมนู">☰</button>
+      <div class="nav-links">
+        <a href="/">สโตร์</a>
+      </div>
+      <div class="nav-right" id="nav-right"></div>
+    </div>
+  </nav>
+
+  <main class="page container">
+    <div class="page-header">
+      <h1>เรียกดู Widget &amp; Theme Pack</h1>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="search" placeholder="ค้นหาชื่อ..." style="width:220px;">
+        <select id="type-filter">
+          <option value="all">ทั้งหมด</option>
+          <option value="widget">Widget</option>
+          <option value="themepack">Theme Pack</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty-state" style="display:none;">ยังไม่มีรายการที่ผ่านการรีวิว</div>
+  </main>
+
+  <script type="module" src="/js/nav.js"></script>
+  <script type="module" src="/js/home.js"></script>
+</body>
+</html>

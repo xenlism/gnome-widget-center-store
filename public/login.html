@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เข้าสู่ระบบ — Widget Center Store</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">🧩 Widget Center Store</a>
+      <div class="nav-links"><a href="/">สโตร์</a></div>
+      <div class="nav-right" id="nav-right"></div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <form class="form-card" id="login-form">
+      <h1>เข้าสู่ระบบ</h1>
+      <div id="alert"></div>
+      <div class="field">
+        <label for="email">อีเมล</label>
+        <input type="email" id="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">รหัสผ่าน</label>
+        <input type="password" id="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">เข้าสู่ระบบ</button>
+      <p class="form-footer">ยังไม่มีบัญชี? <a href="/register.html">สมัครสมาชิก</a></p>
+    </form>
+  </main>
+
+  <script type="module" src="/js/nav.js"></script>
+  <script type="module" src="/js/login.js"></script>
+</body>
+</html>

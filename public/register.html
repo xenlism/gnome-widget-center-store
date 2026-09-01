@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สมัครสมาชิก — Widget Center Store</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">🧩 Widget Center Store</a>
+      <div class="nav-links"><a href="/">สโตร์</a></div>
+      <div class="nav-right" id="nav-right"></div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <form class="form-card" id="register-form">
+      <h1>สมัครสมาชิก</h1>
+      <div id="alert"></div>
+      <div class="field">
+        <label for="displayName">ชื่อที่แสดง</label>
+        <input type="text" id="displayName" required autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="email">อีเมล</label>
+        <input type="email" id="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)</label>
+        <input type="password" id="password" required minlength="8" autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">สมัครสมาชิก</button>
+      <p class="form-footer">มีบัญชีอยู่แล้ว? <a href="/login.html">เข้าสู่ระบบ</a></p>
+    </form>
+  </main>
+
+  <script type="module" src="/js/nav.js"></script>
+  <script type="module" src="/js/register.js"></script>
+</body>
+</html>

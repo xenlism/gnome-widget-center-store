@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ส่งผลงาน — Widget Center Store</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">🧩 Widget Center Store</a>
+      <button class="nav-toggle" aria-label="เมนู">☰</button>
+      <div class="nav-links"><a href="/">สโตร์</a></div>
+      <div class="nav-right" id="nav-right"></div>
+    </div>
+  </nav>
+
+  <main class="page container" style="max-width:560px;">
+    <div class="page-header"><h1>ส่งผลงานของคุณ</h1></div>
+
+    <div class="tabs">
+      <button class="tab active" data-type="widget">Widget (.gwcw)</button>
+      <button class="tab" data-type="themepack">Theme Pack (.gwct)</button>
+    </div>
+
+    <form id="submit-form" class="form-card" style="margin:0; max-width:none;">
+      <div id="alert"></div>
+      <div class="field">
+        <label for="name">ชื่อ</label>
+        <input type="text" id="name" required>
+      </div>
+      <div class="field">
+        <label for="description">คำอธิบาย</label>
+        <textarea id="description"></textarea>
+      </div>
+      <div class="field" id="version-field">
+        <label for="version">เวอร์ชัน</label>
+        <input type="text" id="version" value="1.0.0">
+      </div>
+      <div class="field">
+        <label for="file" id="file-label">ไฟล์ .gwcw</label>
+        <input type="file" id="file" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">ส่งเพื่อรีวิว</button>
+    </form>
+  </main>
+
+  <script type="module" src="/js/nav.js"></script>
+  <script type="module" src="/js/submit.js"></script>
+</body>
+</html>

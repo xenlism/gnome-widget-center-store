@@ -1,0 +1,56 @@
+name = "gnome-widget-center-store"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# Static frontend (public/) is served directly by Cloudflare's edge for
+# any request that matches a file in that folder — the Worker's fetch()
+# handler is never invoked for those requests, so browsing the site costs
+# zero Workers requests. Cloudflare only falls through to the Worker when
+# no static file matches the path, which is exactly every /api/* route
+# here (there is no /public/api/... file), so no extra routing config is
+# needed for the API to work.
+[assets]
+directory = "./public"
+
+[vars]
+# Public by nature — safe to commit. Edit for your deployment.
+SITE_URL = "https://store.example.com"
+PUBLIC_FILES_BASE_URL = "https://files.example.com"
+EMAIL_FROM = "noreply@example.com"
+
+# --- D1 ---
+# Create with: wrangler d1 create gwc-store
+# then paste the returned database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "gwc-store"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# --- R2 ---
+# PUBLIC_BUCKET: only ever contains approved files + the two manifests
+# at repo/widgets.json and repo/themepacks.json.
+# Connect a custom domain to THIS bucket (e.g. files.example.com) so
+# downloads bypass the Worker entirely — see README.
+#   wrangler r2 bucket create gwc-store-public
+#
+# PENDING_BUCKET: unreviewed submissions. Must NEVER get a public custom
+# domain or public access enabled — widget.js runs unsandboxed inside
+# GNOME Shell once installed, so unreviewed code must stay unreachable
+# except through the admin-gated /api/admin/.../download route.
+#   wrangler r2 bucket create gwc-store-pending
+[[r2_buckets]]
+binding = "PUBLIC_BUCKET"
+bucket_name = "gwc-store-public"
+
+[[r2_buckets]]
+binding = "PENDING_BUCKET"
+bucket_name = "gwc-store-pending"
+
+# Daily housekeeping (download-count aggregation once implemented — see
+# the scheduled() stub in src/index.js). Free plan allows 5 cron triggers.
+[triggers]
+crons = ["0 3 * * *"]
+
+# --- Secrets (never put these here — set with `wrangler secret put NAME`) ---
+# JWT_SECRET        long random string, used to sign session cookies
+# RESEND_API_KEY    from https://resend.com (free: 3,000 emails/month)
