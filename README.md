@@ -1,0 +1,1 @@
+# gnome-widget-center-store
