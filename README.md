@@ -48,16 +48,21 @@ still-valid session cookie. Run `npm test` to see it yourself.
 - A [Resend](https://resend.com) account (free) and a domain you can add
   a sender for — or use their test sender while trying things out
 - The [`wrangler`](https://developers.cloudflare.com/workers/wrangler/)
-  CLI (installed via `npm ci` below)
+  CLI (installed via `npm install` below)
 
 ## 1. Clone and install
 
 ```bash
 git clone <this-repo-url>
 cd gnome-widget-center-store
-npm ci
+npm install
 npx wrangler login
 ```
+
+> Note: this repo doesn't ship a `package-lock.json` (it was generated
+> offline, without registry access, for you to fill in). `npm install`
+> creates one on first run — commit it afterwards so `npm install` in CI
+> resolves the exact same versions every time.
 
 ## 2. Create the D1 database
 
