@@ -56,13 +56,37 @@ still-valid session cookie. Run `npm test` to see it yourself.
 git clone <this-repo-url>
 cd gnome-widget-center-store
 npm install
-npx wrangler login
 ```
 
 > Note: this repo doesn't ship a `package-lock.json` (it was generated
 > offline, without registry access, for you to fill in). `npm install`
 > creates one on first run — commit it afterwards so `npm install` in CI
 > resolves the exact same versions every time.
+
+### Authenticating wrangler on a headless Linux box
+
+`wrangler login` opens a browser for OAuth, which doesn't work well on a
+server with no display. Skip it entirely by using an API token instead —
+this is also what step 3's `wrangler r2 bucket domain add` needs anyway:
+
+1. Cloudflare dashboard → **My Profile → API Tokens → Create Token**.
+   Use the **"Edit Cloudflare Workers"** template, then add one more
+   permission: **Zone → Zone → Read** (needed later to look up your
+   zone ID for the R2 custom domain step). Copy the token.
+2. Export it in your shell (or put it in `.dev.vars` / your CI secrets):
+   ```bash
+   export CLOUDFLARE_API_TOKEN="paste-the-token-here"
+   ```
+   Every `wrangler` command below picks this up automatically — no
+   browser, no `wrangler login` needed.
+3. Find your account ID:
+   ```bash
+   npx wrangler whoami
+   ```
+   Export it too — the deploy step needs it:
+   ```bash
+   export CLOUDFLARE_ACCOUNT_ID="paste-the-account-id-here"
+   ```
 
 ## 2. Create the D1 database
 
@@ -80,17 +104,32 @@ npm run migrate:local    # for `wrangler dev`
 npm run migrate:remote   # for production, once deployed
 ```
 
-## 3. Create the two R2 buckets
+## 3. Create the two R2 buckets and connect a custom domain — all via CLI
 
 ```bash
 npx wrangler r2 bucket create gwc-store-public
 npx wrangler r2 bucket create gwc-store-pending
 ```
 
-In the Cloudflare dashboard, go to **R2 → gwc-store-public → Settings →
-Public Access** and connect a custom domain (e.g. `files.example.com`).
-**Do not** enable public access on `gwc-store-pending` — leave it
-Worker-only.
+Look up the zone ID for the domain you'll use (the domain must already
+be an active zone in your Cloudflare account):
+
+```bash
+curl -s "https://api.cloudflare.com/client/v4/zones?name=example.com" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+  | grep -o '"id":"[a-f0-9]*"' | head -1
+```
+
+Connect the custom domain to the **public** bucket only:
+
+```bash
+npx wrangler r2 bucket domain add gwc-store-public \
+  --domain files.example.com \
+  --zone-id <the-zone-id-from-above>
+```
+
+**Do not** run this against `gwc-store-pending` — leave it with no
+public access, reachable only through the Worker's R2 binding.
 
 ## 4. Edit `wrangler.toml`
 

@@ -27,17 +27,26 @@ database_name = "gwc-store"
 database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
 
 # --- R2 ---
-# PUBLIC_BUCKET: only ever contains approved files + the two manifests
-# at repo/widgets.json and repo/themepacks.json.
-# Connect a custom domain to THIS bucket (e.g. files.example.com) so
-# downloads bypass the Worker entirely — see README.
+# Create both:
 #   wrangler r2 bucket create gwc-store-public
-#
-# PENDING_BUCKET: unreviewed submissions. Must NEVER get a public custom
-# domain or public access enabled — widget.js runs unsandboxed inside
-# GNOME Shell once installed, so unreviewed code must stay unreachable
-# except through the admin-gated /api/admin/.../download route.
 #   wrangler r2 bucket create gwc-store-pending
+#
+# PUBLIC_BUCKET: only ever contains approved files + the two manifests
+# at repo/widgets.json and repo/themepacks.json. Connect a custom domain
+# to THIS bucket entirely via CLI:
+#   wrangler r2 bucket domain add gwc-store-public \
+#     --domain files.example.com \
+#     --zone-id <your-zone-id>
+# (get <your-zone-id> with:
+#   curl -s "https://api.cloudflare.com/client/v4/zones?name=example.com" \
+#     -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | grep -o '"id":"[a-f0-9]*"' | head -1
+# — the token needs Zone:Read permission in addition to the Workers/D1/R2
+# scopes used for deploy)
+#
+# PENDING_BUCKET: unreviewed submissions. Must NEVER get a custom domain
+# or public access — widget.js runs unsandboxed inside GNOME Shell once
+# installed, so unreviewed code must stay unreachable except through the
+# admin-gated /api/admin/.../download route.
 [[r2_buckets]]
 binding = "PUBLIC_BUCKET"
 bucket_name = "gwc-store-public"
