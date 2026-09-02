@@ -63,6 +63,26 @@ npm install
 > creates one on first run — commit it afterwards so `npm install` in CI
 > resolves the exact same versions every time.
 
+### If npm warns about blocked install scripts
+
+Newer npm versions (11.16+) block dependencies' `postinstall` scripts by
+default unless the project explicitly trusts them. `package.json`
+already lists `wrangler`'s two native-binary dependencies
+(`esbuild`, `workerd`) as trusted via the `allowScripts` field, so a
+fresh `npm install` on an up-to-date npm should just work. If you ran
+`npm install` **before** pulling that fix, or npm still shows a warning
+for these two, run:
+
+```bash
+npm install-scripts approve esbuild workerd
+npm install
+```
+
+Don't skip this — `esbuild` bundles the Worker for both `wrangler dev`
+and `wrangler deploy`, and `workerd` is the actual local Workers runtime
+`wrangler dev` runs against. Without their scripts having run, both
+commands fail.
+
 ### Authenticating wrangler on a headless Linux box
 
 `wrangler login` opens a browser for OAuth, which doesn't work well on a
