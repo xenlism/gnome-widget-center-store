@@ -19,7 +19,7 @@ export function toolsFor(repo) {
 
 /** python3 tools/gwc_repo.py [--repo R] --key-dir K ARGS -> parsed JSON ({ok, ...}); tool errors come back as {ok:false,error} */
 export async function tool(repo, args, { initFrom = null } = {}) {
-    const dir = initFrom ?? toolsFor(repo);
+    const dir = initFrom ?? BUNDLED_TOOLS;   // always the app's own tools: a repo's old tools/ copy (kept only for build/verify, to match its CI) must not hide fixes in import/config
     const argv = [ PY, GLib.build_filenamev([ dir, "gwc_repo.py" ]), ...(repo && !initFrom ? [ "--repo", repo ] : []), "--key-dir", KEY_DIR, ...args ];
     try {
         const l = new Gio.SubprocessLauncher({ flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE });

@@ -428,11 +428,24 @@ def _extract_gwcw(path, dest_root, replace):
     return wid, md, files, g.get("cover")
 
 
-def _fill_missing_perm(folder):
+CAT_WORDS = [ ("system", "cpu ram memory disk net battery gpu temp sensor system"), ("weather", "weather"), ("clock", "clock time"),
+              ("calendar", "calendar date"), ("media", "music media player"), ("productivity", "note todo task calc timer"),
+              ("launcher", "launcher dock app shortcut"), ("decoration", "wallpaper image gif ring art deco") ]
+
+
+def _guess_catalog(wid, cats):
+    """first catalog whose keyword is in the id's words, else 'other'. ponytail: keyword guess, the author fixes odd ones by hand."""
+    words = set(re.split(r"[^a-z0-9]+", wid.lower().split(".", 3)[-1]))
+    return next((c for c, kw in CAT_WORDS if c in cats and words & set(kw.split())), "other")
+
+
+def _fill_missing_perm(folder, cats=()):
     """Widgets written before `perm` existed have none: declare what the code visibly uses (["none"] if nothing).
     ponytail: fs access is declared as the whole home (~); the author narrows it by hand. Signed widgets always have perm, so are never touched."""
     mdp = folder / "metadata.json"
     md = jread(mdp)
+    if "catalog" not in md and cats:
+        md["catalog"] = _guess_catalog(str(md.get("id", folder.name)), cats); jwrite(mdp, md)
     if "perm" in md: return
     files = [(str(f.relative_to(folder)), f.read_bytes()) for f in folder.rglob("*.js") if f.is_file()]
     need = perm_scan.scan(files)["needed"]
@@ -463,7 +476,7 @@ def cmd_import_widget(a):
             if cover and cover.get("base64"):
                 ext = {"image/png": "png", "image/jpeg": "jpg"}.get(cover.get("mimeType"))
                 if ext: (stage / wid / f"cover.{ext}").write_bytes(base64.b64decode(cover["base64"]))
-        _fill_missing_perm(stage / wid)
+        _fill_missing_perm(stage / wid, cats)
         dest = root / "widgets" / wid
         if dest.exists() and not a.replace:
             die(f"widgets/{wid} already exists (use --replace)")
