@@ -6,6 +6,7 @@ Add widgets and theme packs from folders on your disk, sign them, build the site
 > ภาษาไทย: [README.th.md](README.th.md)
 
 It is a separate project from the extension and from the store template (`gwc-store`). It only needs the store's `tools/`, which are bundled in `backend/tools`.
+It lives in its own git repository, apart from the extension (`gnome-widget-center`) and the store (`gwc-store`); nothing here imports from either.
 
 ---
 
@@ -180,7 +181,7 @@ rm -rf .venv                               # if install.sh created one
 ## Development
 All repository logic is in Python (`backend/tools/gwc_repo.py` prints JSON); the app is a thin front end.
 
-Keep the bundled backend in step with gwc-store:
+Keep the bundled backend in step with gwc-store (a separate checkout; the drift test in gwc-store only runs when the two sit side by side):
 ```sh
 ./sync-backend.sh /path/to/gwc-store
 ```
