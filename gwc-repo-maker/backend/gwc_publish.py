@@ -338,7 +338,7 @@ def pages_info(token, owner, name):
     src = p.get("source") or {}
     branch = repo.get("default_branch") or "main" if workflow else (src.get("branch") or repo.get("default_branch") or "main")
     path = "" if workflow else (src.get("path") or "/").strip("/")
-    html = (p.get("html_url") or pages_url(owner, name)).rstrip("/") + "/"
+    html = re.sub(r"^http://", "https://", (p.get("html_url") or pages_url(owner, name)).strip()).rstrip("/") + "/"   # the API can say http:// while https is on
     return {"branch": branch, "path": path, "html": html, "workflow": workflow}
 
 

@@ -428,6 +428,19 @@ def _extract_gwcw(path, dest_root, replace):
     return wid, md, files, g.get("cover")
 
 
+def _fill_missing_perm(folder):
+    """Widgets written before `perm` existed have none: declare what the code visibly uses (["none"] if nothing).
+    ponytail: fs access is declared as the whole home (~); the author narrows it by hand. Signed widgets always have perm, so are never touched."""
+    mdp = folder / "metadata.json"
+    md = jread(mdp)
+    if "perm" in md: return
+    files = [(str(f.relative_to(folder)), f.read_bytes()) for f in folder.rglob("*.js") if f.is_file()]
+    need = perm_scan.scan(files)["needed"]
+    perm = [c if c in ("network", "subprocess") else f"{c}:~" for c in sorted(need) if not (c == "fs-read" and "fs-write" in need)]
+    md["perm"] = perm or ["none"]
+    jwrite(mdp, md)
+
+
 def cmd_import_widget(a):
     root = bs.ROOT
     src = Path(a.path)
@@ -450,6 +463,7 @@ def cmd_import_widget(a):
             if cover and cover.get("base64"):
                 ext = {"image/png": "png", "image/jpeg": "jpg"}.get(cover.get("mimeType"))
                 if ext: (stage / wid / f"cover.{ext}").write_bytes(base64.b64decode(cover["base64"]))
+        _fill_missing_perm(stage / wid)
         dest = root / "widgets" / wid
         if dest.exists() and not a.replace:
             die(f"widgets/{wid} already exists (use --replace)")
@@ -561,7 +575,7 @@ def cmd_config(a):
         if not v.isdigit() or not 1 <= int(v) <= 365: die("expiryDays must be 1-365")
         v = int(v)
     elif a.key == "tier" and v not in ("official", "community"): die("tier must be official or community")
-    elif a.key == "baseUrl" and not (v.startswith("https://") and v.endswith("/")): die("baseUrl must be https://... and end with '/'")
+    elif a.key == "baseUrl" and not (v.startswith("https://") and v.endswith("/")): die(f"baseUrl must be https://... and end with '/' (got {v!r})")
     elif a.key == "name" and not 1 <= len(v) <= 80: die("name: 1-80 chars")
     elif a.key == "signKid" and v not in {k["kid"] for k in cfg.get("trust", {}).get("keys", [])}: die("signKid must be one of trust.keys")
     if a.key in ("expiryDays", "signKid"): cfg.setdefault("trust", {})[a.key] = v

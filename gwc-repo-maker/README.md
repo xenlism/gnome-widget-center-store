@@ -62,6 +62,13 @@ sudo dnf install gjs gtk4 libadwaita python3 python3-cryptography python3-pillow
 ./install.sh
 ```
 
+### Check / install dependencies
+```bash
+bin/gwc-repo-maker doctor        # detects your distro and lists what is missing
+bin/gwc-repo-maker install-deps  # installs system packages (sudo) and Python deps; add --print to only show the command
+```
+Supports Debian/Ubuntu, Fedora/RHEL, Arch and openSUSE families.
+
 ### What `install.sh` does
 1. Checks for `cryptography`. If it is missing, it creates a virtualenv in `.venv` inside the app folder and installs the dependencies there (system pip is not used, so there is no `externally-managed-environment` error). The app picks up `.venv` automatically.
 2. If a virtualenv cannot be created, it prints the package-manager commands to use instead.

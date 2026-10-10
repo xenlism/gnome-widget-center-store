@@ -1,4 +1,5 @@
 #!/bin/sh
 # Launcher. Needs: gjs >= 1.76, GTK 4.10+, libadwaita >= 1.5, python3 with `cryptography` (and Pillow for generated covers).
 DIR="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+case "$1" in doctor|install-deps) exec "$DIR/bin/gwc-deps" "$@" ;; esac
 exec gjs -m "$DIR/src/main.js" "$@"
